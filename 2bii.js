@@ -1,30 +1,15 @@
-const https = require('https');
-
 function getIncompleteTodosWithPromise() {
-  return new Promise((resolve, reject) => {
-    const todosUrl = 'https://jsonplaceholder.typicode.com/todos';
-    
-    https.get(todosUrl, (response) => {
-      let collectedData = '';
-      
-      response.on('data', (chunk) => {
-        collectedData += chunk;
-      });
-      
-      response.on('end', () => {
-        try {
-          const allTodos = JSON.parse(collectedData);
-          const pendingTodos = allTodos.filter(todo => !todo.completed);
-          resolve(pendingTodos);
-        } catch (parseError) {
-          reject(parseError);
-        }
-      });
-      
-    }).on('error', (networkError) => {
-      reject(networkError);
+  return fetch('https://jsonplaceholder.typicode.com/todos')
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`Ошибка HTTP: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(todos => {
+      const pendingTodos = todos.filter(todo => !todo.completed);
+      return pendingTodos;
     });
-  });
 }
 
 getIncompleteTodosWithPromise()
