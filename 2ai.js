@@ -20,11 +20,10 @@ getDataFromAPI('https://jsonplaceholder.typicode.com/posts', (error, postsData) 
     return;
   }
 
-  const postsSortedByTitleLength = postsData.sort((a, b) => 
+  const postsSortedByTitleLength = postsData.sort((a, b) =>
     b.title.length - a.title.length
   );
 
   console.log('Посты, отсортированные по длине заголовка:');
   console.log(postsSortedByTitleLength);
 });
-
