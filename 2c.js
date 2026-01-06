@@ -1,43 +1,27 @@
-const https = require('https');
-
 function fetchDataFromAPI(url) {
-  return new Promise((resolve, reject) => {
-    https.get(url, (response) => {
-      let responseBody = '';
-      
-      response.on('data', (chunk) => {
-        responseBody += chunk;
-      });
-      
-      response.on('end', () => {
-        try {
-          const jsonData = JSON.parse(responseBody);
-          resolve(jsonData);
-        } catch (parsingError) {
-          reject(parsingError);
-        }
-      });
-      
-    }).on('error', (requestError) => {
-      reject(requestError);
+  return fetch(url)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.json();
     });
-  });
 }
 
 async function executeAllTasks() {
   try {
     const postsData = await fetchDataFromAPI('https://jsonplaceholder.typicode.com/posts');
-    const postsSortedByTitleLength = postsData.sort((firstPost, secondPost) => 
-      secondPost.title.length - firstPost.title.length
+    const postsSortedByTitleLength = postsData.sort((a, b) => 
+      b.title.length - a.title.length
     );
     console.log('Посты отсортированные по убыванию длины заголовка:');
     console.log(postsSortedByTitleLength);
 
     const commentsData = await fetchDataFromAPI('https://jsonplaceholder.typicode.com/comments');
-    const commentsSortedByName = commentsData.sort((firstComment, secondComment) => 
-      firstComment.name.localeCompare(secondComment.name)
+    const commentsSortedByName = commentsData.sort((a, b) => 
+      a.name.localeCompare(b.name)
     );
-    console.log('Комментарии упорядоченные по имени автора:');
+    console.log('\nКомментарии упорядоченные по имени автора:');
     console.log(commentsSortedByName);
 
     const usersData = await fetchDataFromAPI('https://jsonplaceholder.typicode.com/users');
@@ -48,14 +32,13 @@ async function executeAllTasks() {
       email: user.email,
       phone: user.phone
     }));
-    console.log('Пользователи с выбранными полями:');
+    console.log('\nПользователи с выбранными полями:');
     console.log(usersWithSelectedFields);
 
     const todosData = await fetchDataFromAPI('https://jsonplaceholder.typicode.com/todos');
     const incompleteTodos = todosData.filter(todo => !todo.completed);
-    console.log('Список невыполненных задач:');
+    console.log('\nСписок невыполненных задач:');
     console.log(incompleteTodos);
-
   } catch (error) {
     console.error('Возникла ошибка:', error);
   }
