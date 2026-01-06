@@ -26,5 +26,3 @@ getUsersWithPromise()
   .catch(error => {
     console.error('Произошла ошибка при выполнении запроса:', error);
   });
-
-showProcessedUsers();
